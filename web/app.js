@@ -4,12 +4,14 @@
  */
 
 var express = require('express');
-var routes = require('./routes');
-var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
 
 var app = express();
+
+var db = require('./routes/mongodb_schema');
+var mongoose = require('mongoose');
+var Task = mongoose.model('Task');
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -28,8 +30,12 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-app.get('/', routes.index);
-app.get('/users', user.list);
+app.get('/',function(req,res){
+  res.redirect('/taskmgmt');
+});
+app.get('/taskmgmt',function(req,res){
+  res.render('taskmgmt');
+});
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
