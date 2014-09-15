@@ -9,9 +9,14 @@ var path = require('path');
 
 var app = express();
 
-var db = require('./routes/mongodb_schema');
 var mongoose = require('mongoose');
+var db = require('./routes/mongodb_schema');
 var Task = mongoose.model('Task');
+
+var task = require('./routes/task');
+
+
+
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -30,13 +35,61 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-app.get('/',function(req,res){
-  res.redirect('/taskmgmt');
+
+app.post('/task',function(req,res){
+  if (req.body.name && req.body.from && req.body.to && req.body.subject && req.body.description && req.body.deadline ) {
+    task.addTask(req.body.name,req.body.from,req.body.to,req.body.subject,req.body.description,req.body.deadline,function(err,task){
+      if (err) {
+        console.log("Error Adding Task : "+err);
+        res.send(500);
+      }
+      else if (task) {
+        res.send(task);
+      }
+    });
+  }
+  else{
+    res.send(400);
+  }
 });
-app.get('/taskmgmt',function(req,res){
-  res.render('taskmgmt');
+app.get('/task',function(req,res){
+  task.getAllTasks(function(err,tasks){
+      if (err) {
+        console.log("Error Getting All Task : "+err);
+        res.send(500);
+      }
+      else if (tasks) {
+        res.send(tasks);
+      }
+  });
+});
+app.put('/task/:id',function(req,res){
+if (req.params.id && req.body.name && req.body.from && req.body.to && req.body.subject && req.body.description && req.body.deadline && req.body.state ) {
+    task.updateTask(req.params.id,req.body.name,req.body.from,req.body.to,req.body.subject,req.body.description,req.body.deadline,req.body.state,function(err,task){
+      if (err) {
+        console.log("Error Updating Task : "+err);
+        res.send(500);
+      }
+      else if (task) {
+        res.send(task);
+      }
+    });
+  }
+  else{
+    res.send(400);
+  }
 });
 
-http.createServer(app).listen(app.get('port'), function(){
+var server = http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+
+var io = require('socket.io').listen(server);
+io.on('connection', function(socket){
+  console.log('a user connected');
+  socket.on('add_task', function(task){
+    console.log("task received");
+    io.emit('add_task', task);
+  });
+});
+

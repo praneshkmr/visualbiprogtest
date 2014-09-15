@@ -142,8 +142,7 @@
     </script>
     
     <script type="text/template" class="template" id="PendingTasksTableRowItemTemplate">
-      "<td><%-name%></td>"+"<td>"+this.model.get('name')+"</td>"+"<td>"+this.model.get('from')+
-                "</td>"+"<td>"+this.model.get('deadline')+"</td>"+"<td><i class='icon-ok'></i></td></tr>"
+      <td><%=name%></td><td><%=from%></td><td><%=deadline%></td><td><i class='icon-ok'></i></td></tr>
     </script>
     
     <script>

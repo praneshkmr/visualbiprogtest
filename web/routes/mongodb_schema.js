@@ -7,7 +7,8 @@ var TaskSchema = new Schema({
     "to" : { type: String },
     "subject" : { type: String },
     "description" : { type: String },
-    "deadline" : { type: Date },
+    "deadline" : { type: String },
+    "state" : { type: String },
     "created_at" : { type: Date },
     "updated_at" : { type: Date },
 });
